@@ -6,6 +6,39 @@
   
   <script>
 
+    const handleResponse = async (response) => {
+      const content = document.querySelector('#content');
+      
+      switch(response.status) { 
+        case 200:
+          content.innerHTML = `<b>Success</b>`;
+          break;
+        case 201:
+          content.innerHTML = '<b>Created</b>';
+          break;
+        case 204:
+          content.innerHTML = '<b>Updated (No Content)</b>';
+          return;
+        case 400:
+          content.innerHTML = `<b>Bad Request</b>`;
+          break;
+        default: 
+          content.innerHTML = `Error code not implemented by client.`;
+          break;
+      }
+
+      const obj = await response.json();
+
+      if(obj.message) {
+        content.innerHTML += `<p>${obj.message}</p>`
+      }
+      
+    };
+
+
+
+    window.onload()
+
   </script>
 </head>
 <body>
