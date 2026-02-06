@@ -1,0 +1,16 @@
+{
+  "name": "api_assignment",
+  "version": "0.0.0",
+  "description": "api_assignment",
+  "main": "./src/server.js",
+  "scripts": {
+    "start": "node ./src/server.js",
+    "pretest": "eslint ./src --fix",
+    "test": "echo \"Tests complete\""
+  },
+  "author": "Dessa Shapiro",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^9.39.2"
+  }
+}
