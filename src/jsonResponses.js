@@ -1,5 +1,3 @@
-const query = require('querystring');
-
 const getType = (request) => {
   const accept = request.headers.accept;
   if (accept && accept.includes('text/xml')) {
@@ -23,7 +21,6 @@ const respondJSON = (request, response, status, object) => {
   response.end();
 };
 
-
 const respondXML = (request, response, status, xmlString) => {
   response.writeHead(status, {
     'Content-Type': 'text/xml',
@@ -37,21 +34,15 @@ const respondXML = (request, response, status, xmlString) => {
   response.end();
 };
 
-
-const buildXML = (message, id = null) => {
-  let xml = `<response><message>${message}</message>`;
-  if (id) {
-    xml += `<id>${id}</id>`;
-  }
-  xml += `</response>`;
-  return xml;
-};
-
 const respond = (request, response, status, message, id = null) => {
   const type = getType(request);
 
   if (type === 'xml') {
-    const xml = buildXML(message, id);
+    let xml = `<response><message>${message}</message>`;
+    if (id) {
+      xml += `<id>${id}</id>`;
+    }
+    xml += `</response>`;
     respondXML(request, response, status, xml);
   } else {
     const obj = { message };
@@ -60,53 +51,38 @@ const respond = (request, response, status, message, id = null) => {
   }
 };
 
+// API Endpoints
 
 const success = (request, response) => {
   respond(request, response, 200, 'This request was successful');
 };
 
 const badRequest = (request, response, parsedUrl) => {
-  const params = query.parse(parsedUrl.search.substring(1));
-
-  if (params.valid !== 'true') {
-    respond(
+  if (!parsedUrl.query.valid || parsedUrl.query.valid !== 'true') {
+    return respond(
       request,
       response,
       400,
-      'Missing valid query parameter',
+      'Missing valid query parameter set to true',
       'badRequest'
     );
-    return;
   }
 
-  respond(
-    request,
-    response,
-    200,
-    'Valid query parameter present'
-  );
+  return respond(request, response, 200, 'This request has the required parameters');
 };
 
 const unauthorized = (request, response, parsedUrl) => {
-  const params = query.parse(parsedUrl.search.substring(1));
-
-  if (params.loggedIn !== 'yes') {
-    respond(
+  if (!parsedUrl.query.loggedIn || parsedUrl.query.loggedIn !== 'yes') {
+    return respond(
       request,
       response,
       401,
-      'User is not logged in',
+      'Missing loggedIn query parameter set to yes',
       'unauthorized'
     );
-    return;
   }
 
-  respond(
-    request,
-    response,
-    200,
-    'User successfully authenticated'
-  );
+  return respond(request, response, 200, 'You have successfully viewed the content');
 };
 
 const forbidden = (request, response) => {
@@ -124,8 +100,8 @@ const internal = (request, response) => {
     request,
     response,
     500,
-    'Internal server error',
-    'internal'
+    'Internal Server Error. Something went wrong.',
+    'internalError'
   );
 };
 
@@ -134,7 +110,7 @@ const notImplemented = (request, response) => {
     request,
     response,
     501,
-    'This functionality has not been implemented',
+    'A get request for this page has not been implemented yet. Check again later for updated content.',
     'notImplemented'
   );
 };
@@ -144,7 +120,7 @@ const notFound = (request, response) => {
     request,
     response,
     404,
-    'The requested resource was not found',
+    'The page you are looking for was not found.',
     'notFound'
   );
 };

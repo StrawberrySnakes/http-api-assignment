@@ -14,20 +14,17 @@
       console.log(fetchedText); 
 
       const contentType = response.headers.get('Content-Type');
-      content.innerHTML += `<p><strong>Status:</strong> ${response.status}</p>`;
+      content.innerHTML += `<p><strong>Status:</strong> ${response.status} ${response.statusText}</p>`;
 
       if(contentType && contentType.includes('application/json')) {
         const obj = JSON.parse(fetchedText);
-
-        if(obj.message) {
-          content.innerHTML += `<p>${obj.message}</p>`;
-        }
+        content.innerHTML += `<p><strong>Message:</strong> ${obj.message}</p>`;
         if (obj.id) {
-          content.innerHTML += `<p><em>ID:</em> ${obj.id}</p>`;
+          content.innerHTML += `<p><strong>ID:</strong> ${obj.id}</p>`;
         }
       } else if (contentType && contentType.includes('text/xml')) {
         const parser = new DOMParser();
-        const xml = parser.parseFromString(fetchedText, 'application/xml');
+        const xml = parser.parseFromString(fetchedText, 'text/xml');
 
         const message = xml.querySelector('message');
         const id = xml.querySelector('id');
@@ -35,22 +32,15 @@
         if (message) {
           content.innerHTML += `<p>${message.textContent}</p>`;
         }
-
         if (id) {
-          content.innerHTML += `<p><em>ID:</em> ${id.textContent}</p>`;
+          content.innerHTML += `<p><strong>ID:</strong> ${id.textContent}</p>`;
         }
       }
     };
 
-
     const sendRequest = async () => {
       const page = document.querySelector('#page').value;
       const type = document.querySelector('#type').value;
-
-      const queryInput = document.querySelector('#query').value.trim();
-      if (queryInput) {
-        page += queryInput.startsWith('?') ? queryInput : '?' + queryInput;
-      }
 
       try {
         const response = await fetch(page, {
