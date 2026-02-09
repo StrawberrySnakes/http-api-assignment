@@ -92,7 +92,7 @@ const forbidden = (request, response) => {
     403,
     'You do not have access to this content',
     'forbidden'
-  );
+  ); 
 };
 
 const internal = (request, response) => {
