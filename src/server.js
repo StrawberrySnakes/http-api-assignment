@@ -49,6 +49,7 @@ const urlStruct = {
 //   }
 // };
 
+//Handlers the request from the client
 const onRequest = (request, response) => {
   const parsedUrl = url.parse(request.url, true);
 
@@ -59,6 +60,7 @@ const onRequest = (request, response) => {
   }
 };
 
+//creates the server
 http.createServer(onRequest).listen(port, () => {
   console.log(`Listening on 127.0.0.1: ${port}`);
 });

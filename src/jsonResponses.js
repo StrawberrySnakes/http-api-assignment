@@ -1,3 +1,4 @@
+//Helper to return the type json or xml
 const getType = (request) => {
   const accept = request.headers.accept;
   if (accept && accept.includes('text/xml')) {
@@ -6,6 +7,7 @@ const getType = (request) => {
   return 'json';
 };
 
+//Response function for json
 const respondJSON = (request, response, status, object) => {
   const content = JSON.stringify(object);
 
@@ -21,6 +23,7 @@ const respondJSON = (request, response, status, object) => {
   response.end();
 };
 
+//Response function for xml
 const respondXML = (request, response, status, xmlString) => {
   response.writeHead(status, {
     'Content-Type': 'text/xml',
@@ -34,6 +37,7 @@ const respondXML = (request, response, status, xmlString) => {
   response.end();
 };
 
+//General response function
 const respond = (request, response, status, message, id = null) => {
   const type = getType(request);
 
@@ -52,9 +56,8 @@ const respond = (request, response, status, message, id = null) => {
 };
 
 // API Endpoints
-
 const success = (request, response) => {
-  respond(request, response, 200, 'This request was successful');
+  respond(request, response, 200, 'This is a successful response');
 };
 
 const badRequest = (request, response, parsedUrl) => {
@@ -125,6 +128,7 @@ const notFound = (request, response) => {
   );
 };
 
+//exports
 module.exports = {
   success,
   badRequest,

@@ -5,7 +5,6 @@
   <link rel="stylesheet" type="text/css" href="/style.css">
   
   <script>
-
     const handleResponse = async (response) => {
       const content = document.querySelector('#content');
       content.innerHTML = '';
@@ -19,6 +18,7 @@
       if(contentType && contentType.includes('application/json')) {
         const obj = JSON.parse(fetchedText);
         content.innerHTML += `<p><strong>Message:</strong> ${obj.message}</p>`;
+
         if (obj.id) {
           content.innerHTML += `<p><strong>ID:</strong> ${obj.id}</p>`;
         }
@@ -28,7 +28,6 @@
 
         const message = xml.querySelector('message');
         const id = xml.querySelector('id');
-
         if (message) {
           content.innerHTML += `<p>${message.textContent}</p>`;
         }
@@ -48,7 +47,6 @@
             'Accept': type,
           },
         });
-
         handleResponse(response);
       } catch (err) {
         console.error(err);
