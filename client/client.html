@@ -8,36 +8,66 @@
 
     const handleResponse = async (response) => {
       const content = document.querySelector('#content');
-      
-      switch(response.status) { 
-        case 200:
-          content.innerHTML = `<b>Success</b>`;
-          break;
-        case 201:
-          content.innerHTML = '<b>Created</b>';
-          break;
-        case 204:
-          content.innerHTML = '<b>Updated (No Content)</b>';
-          return;
-        case 400:
-          content.innerHTML = `<b>Bad Request</b>`;
-          break;
-        default: 
-          content.innerHTML = `Error code not implemented by client.`;
-          break;
-      }
+      content.innerHTML = '';
 
-      const obj = await response.json();
+      const fetchedText = await response.text();
+      console.log(fetchedText); 
 
-      if(obj.message) {
-        content.innerHTML += `<p>${obj.message}</p>`
+      const contentType = response.headers.get('Content-Type');
+      content.innerHTML += `<p><strong>Status:</strong> ${response.status}</p>`;
+
+      if(contentType && contentType.includes('application/json')) {
+        const obj = JSON.parse(fetchedText);
+
+        if(obj.message) {
+          content.innerHTML += `<p>${obj.message}</p>`;
+        }
+        if (obj.id) {
+          content.innerHTML += `<p><em>ID:</em> ${obj.id}</p>`;
+        }
+      } else if (contentType && contentType.includes('text/xml')) {
+        const parser = new DOMParser();
+        const xml = parser.parseFromString(fetchedText, 'application/xml');
+
+        const message = xml.querySelector('message');
+        const id = xml.querySelector('id');
+
+        if (message) {
+          content.innerHTML += `<p>${message.textContent}</p>`;
+        }
+
+        if (id) {
+          content.innerHTML += `<p><em>ID:</em> ${id.textContent}</p>`;
+        }
       }
-      
     };
 
 
+    const sendRequest = async () => {
+      const page = document.querySelector('#page').value;
+      const type = document.querySelector('#type').value;
 
-    window.onload()
+      const queryInput = document.querySelector('#query').value.trim();
+      if (queryInput) {
+        page += queryInput.startsWith('?') ? queryInput : '?' + queryInput;
+      }
+
+      try {
+        const response = await fetch(page, {
+          headers: {
+            'Accept': type,
+          },
+        });
+
+        handleResponse(response);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    window.onload = () => {
+      document.querySelector('#send').onclick = sendRequest;
+    };
 
   </script>
 </head>
